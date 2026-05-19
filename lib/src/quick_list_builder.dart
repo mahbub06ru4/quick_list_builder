@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Signature for an async data fetcher used by [QuickListBuilder].
@@ -149,10 +148,10 @@ class QuickListBuilder<T> extends StatefulWidget {
   final VisualDensity? selectionVisualDensity;
 
   /// Track color for the default [Switch].
-  final MaterialStateProperty<Color?>? switchTrackColor;
+  final WidgetStateProperty<Color?>? switchTrackColor;
 
   /// Thumb color for the default [Switch].
-  final MaterialStateProperty<Color?>? switchThumbColor;
+  final WidgetStateProperty<Color?>? switchThumbColor;
 
   /// Deprecated. Use `selectionMode: QuickListSelectionMode.radio` instead.
   @Deprecated('Use selectionMode: QuickListSelectionMode.radio')
@@ -165,7 +164,9 @@ class QuickListBuilder<T> extends StatefulWidget {
   /// Resolves the effective selection mode, honoring legacy bool flags.
   QuickListSelectionMode get effectiveSelectionMode {
     if (selectionMode != QuickListSelectionMode.none) return selectionMode;
+    // ignore: deprecated_member_use_from_same_package
     if (isRadio) return QuickListSelectionMode.radio;
+    // ignore: deprecated_member_use_from_same_package
     if (isCheckbox) return QuickListSelectionMode.checkbox;
     return QuickListSelectionMode.none;
   }
@@ -400,14 +401,14 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
     });
     try {
       final result = await widget.fetcher!(1, widget.pageSize);
-      if (!mounted) return;
+      if (!mounted) { return; }
       setState(() {
         _items.addAll(result.items);
         _hasMore = result.hasMore;
         _initialLoading = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) { return; }
       setState(() {
         _error = e;
         _initialLoading = false;
@@ -424,7 +425,7 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
     try {
       final nextPage = _page + 1;
       final result = await widget.fetcher!(nextPage, widget.pageSize);
-      if (!mounted) return;
+      if (!mounted) { return; }
       setState(() {
         _items.addAll(result.items);
         _hasMore = result.hasMore;
@@ -432,7 +433,7 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
         _loadingMore = false;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted) { return; }
       setState(() {
         _loadingMore = false;
         // Don't replace the whole-list error here; surface as a snackbar-friendly callback.
@@ -452,7 +453,7 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
   }
 
   void _showLoadMoreError(Object error) {
-    if (!mounted) return;
+    if (!mounted) { return; }
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(
       SnackBar(
         content: Text('Failed to load more: $error'),
@@ -798,12 +799,15 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
         if (widget.radioBuilder != null) {
           return widget.radioBuilder!(context, item, isSelected, onTap);
         }
+        // ignore: deprecated_member_use
         return Radio<T>(
           value: item,
+          // ignore: deprecated_member_use
           groupValue: widget.selectedItem,
           activeColor: widget.activeColor,
           materialTapTargetSize: widget.selectionTapTargetSize,
           visualDensity: widget.selectionVisualDensity,
+          // ignore: deprecated_member_use
           onChanged: onTapNullable == null ? null : (_) => onTapNullable(),
         );
       case QuickListSelectionMode.checkbox:
@@ -827,6 +831,7 @@ class _QuickListBuilderState<T> extends State<QuickListBuilder<T>> {
         }
         return Switch(
           value: isSelected,
+          // ignore: deprecated_member_use
           activeColor: widget.activeColor,
           trackColor: widget.switchTrackColor,
           thumbColor: widget.switchThumbColor,
@@ -960,8 +965,8 @@ extension QuickListExtension<T> on List<T> {
     bool checkboxTristate = false,
     MaterialTapTargetSize? selectionTapTargetSize,
     VisualDensity? selectionVisualDensity,
-    MaterialStateProperty<Color?>? switchTrackColor,
-    MaterialStateProperty<Color?>? switchThumbColor,
+    WidgetStateProperty<Color?>? switchTrackColor,
+    WidgetStateProperty<Color?>? switchThumbColor,
     EdgeInsetsGeometry? itemPadding,
     EdgeInsetsGeometry? itemMargin,
     EdgeInsetsGeometry? padding,
